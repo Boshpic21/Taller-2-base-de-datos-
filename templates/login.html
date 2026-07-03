@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Ingresar a Cuenta</title>
+  <link rel="stylesheet" href="/static/estilos.css">
+</head>
+<body class="fondo-login">
+
+  <div class="tarjeta-login">
+    <div class="logo-login">BUFETE LEGAL</div>
+    <hr class="linea-logo">
+
+    <h2 class="titulo-login">INGRESAR A CUENTA</h2>
+
+    <input type="text" id="usuario" placeholder="USUARIO" autocomplete="username">
+    <input type="password" id="contrasena" placeholder="CONTRASEÑA" autocomplete="current-password">
+
+    <button class="boton-ingresar" onclick="ingresar()">INGRESAR A CUENTA</button>
+
+    <p class="olvidaste">OLVIDASTE TU CONTRASEÑA</p>
+    <p id="mensaje-error" class="mensaje-error"></p>
+  </div>
+
+  <script>
+    async function ingresar() {
+      const usuario = document.getElementById("usuario").value;
+      const contrasena = document.getElementById("contrasena").value;
+      const error = document.getElementById("mensaje-error");
+      error.textContent = "";
+
+      const respuesta = await fetch("/api/login", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ usuario: usuario, contrasena: contrasena })
+      });
+
+      const datos = await respuesta.json();
+
+      if (respuesta.ok) {
+        sessionStorage.setItem("nombre", datos.nombre);
+        window.location.href = "/dashboard";
+      } else {
+        error.textContent = datos.error || "Credenciales incorrectas";
+      }
+    }
+
+    document.addEventListener("keydown", (e) => {
+      if (e.key === "Enter") ingresar();
+    });
+  </script>
+</body>
+</html>
